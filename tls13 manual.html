@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>TLS 1.3 API 介接連線確認與驗證操作手冊</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --panel:#ffffff; --text:#1f2933; --muted:#5b6b79;
+    --accent:#0b5fff; --accent-dark:#08429c; --border:#dde3ea;
+    --code-bg:#1e2530; --code-text:#e6edf3;
+    --step-bg:#eaf3ff; --step-border:#0b5fff;
+    --result-bg:#eafaf0; --result-border:#1f9d55;
+    --warn-bg:#fff6e5; --warn-border:#e0a100;
+    --tip-bg:#f3eeff; --tip-border:#7c4dff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",-apple-system,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.75; font-size:16px;
+  }
+  .layout{display:flex; max-width:1400px; margin:0 auto;}
+  nav#toc{
+    width:280px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border);
+    padding:24px 16px; position:sticky; top:0; height:100vh; overflow-y:auto;
+  }
+  nav#toc h2{font-size:15px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:0;}
+  nav#toc ul{list-style:none; padding-left:0; margin:0;}
+  nav#toc ul ul{padding-left:16px; margin-top:4px; margin-bottom:8px;}
+  nav#toc li{margin:4px 0;}
+  nav#toc a{color:var(--text); text-decoration:none; font-size:14px; display:block; padding:4px 8px; border-radius:6px;}
+  nav#toc a:hover{background:var(--step-bg); color:var(--accent-dark);}
+  main{flex:1; padding:32px 48px 96px; max-width:980px;}
+  header.title-block{margin-bottom:32px; padding-bottom:24px; border-bottom:2px solid var(--border);}
+  header.title-block h1{font-size:30px; margin-bottom:8px; color:var(--accent-dark);}
+  header.title-block p{color:var(--muted); margin:0;}
+  section{margin-bottom:56px; scroll-margin-top:20px;}
+  h2{font-size:24px; color:var(--accent-dark); border-left:6px solid var(--accent); padding-left:12px; margin-top:48px;}
+  h3{font-size:19px; color:var(--text); margin-top:32px; border-bottom:1px solid var(--border); padding-bottom:6px;}
+  h4{font-size:16px; color:var(--accent-dark); margin-top:24px;}
+  p{margin:12px 0;}
+  table{border-collapse:collapse; width:100%; margin:16px 0; font-size:14px;}
+  th,td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top;}
+  th{background:#eef2f7; color:var(--text);}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{
+    font-family:"Cascadia Code","Consolas","SFMono-Regular",Menlo,monospace;
+    background:#eef1f5; padding:2px 6px; border-radius:4px; font-size:.9em; color:#c7254e;
+  }
+  pre{
+    background:var(--code-bg); color:var(--code-text); padding:16px 20px; border-radius:8px;
+    overflow-x:auto; font-family:"Cascadia Code","Consolas","SFMono-Regular",Menlo,monospace;
+    font-size:13.5px; line-height:1.6; margin:12px 0;
+  }
+  pre code{background:none; padding:0; color:inherit;}
+  .box{border-radius:8px; padding:14px 18px; margin:14px 0; border-left:6px solid; font-size:15px;}
+  .box .box-title{font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px;}
+  .box.step{background:var(--step-bg); border-color:var(--step-border);}
+  .box.step .box-title{color:var(--step-border);}
+  .box.result{background:var(--result-bg); border-color:var(--result-border);}
+  .box.result .box-title{color:var(--result-border);}
+  .box.warn{background:var(--warn-bg); border-color:var(--warn-border);}
+  .box.warn .box-title{color:#8a6400;}
+  .box.tip{background:var(--tip-bg); border-color:var(--tip-border);}
+  .box.tip .box-title{color:var(--tip-border);}
+  .checklist{list-style:none; padding-left:0;}
+  .checklist li{margin:8px 0; padding-left:32px; position:relative;}
+  .checklist li::before{
+    content:"\2610"; position:absolute; left:0; top:0; font-size:20px; color:var(--accent);
+  }
+  .badge{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:var(--accent); color:#fff; margin-left:8px;}
+  .badge.pro{background:#5b3fd9;}
+  a.anchor-link{color:var(--accent);}
+  footer{margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:13px;}
+  .top-link{font-size:13px;}
+  @media (max-width: 900px){
+    .layout{flex-direction:column;}
+    nav#toc{width:100%; height:auto; position:relative;}
+    main{padding:24px;}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav id="toc">
+<h2>目錄</h2>
+<ul>
+  <li><a href="#ch1">一、基本觀念（新手導讀）</a>
+    <ul>
+      <li><a href="#ch1-1">1. 白話比喻解釋</a></li>
+      <li><a href="#ch1-2">2. 為何升級到 TLS 1.3</a></li>
+      <li><a href="#ch1-3">3. 名詞速查表</a></li>
+    </ul>
+  </li>
+  <li><a href="#ch2">二、確認現況（升級前盤點）</a>
+    <ul>
+      <li><a href="#ch2-1">1. 作業系統支援檢查</a></li>
+      <li><a href="#ch2-2">2. AP Server 現況檢查</a></li>
+      <li><a href="#ch2-3">3. 工具檢測（openssl/curl/nmap）</a></li>
+    </ul>
+  </li>
+  <li><a href="#ch3">三、開發語言介接設定與驗證</a>
+    <ul>
+      <li><a href="#ch3-1">1. Java</a></li>
+      <li><a href="#ch3-2">2. Python</a></li>
+      <li><a href="#ch3-3">3. .NET</a></li>
+    </ul>
+  </li>
+  <li><a href="#ch4">四、測試驗證腳本</a>
+    <ul>
+      <li><a href="#ch4-1">1. Linux Shell Script</a></li>
+      <li><a href="#ch4-2">2. Windows Batch</a></li>
+      <li><a href="#ch4-3">3. Windows PowerShell</a></li>
+    </ul>
+  </li>
+  <li><a href="#ch5">五、常見問題排除</a>
+    <ul>
+      <li><a href="#ch5-1">1. 依角色分類的常見迷思</a></li>
+      <li><a href="#ch5-2">2. 現象／原因／處理對照表</a></li>
+    </ul>
+  </li>
+  <li><a href="#ch6">六、上線前檢查清單</a></li>
+</ul>
+</nav>
+
+<main>
+<header class="title-block">
+  <h1>TLS 1.3 API 介接連線確認與驗證操作手冊</h1>
+  <p>適用對象：資安人員、系統維運（Infra/SRE）、後端開發（Java／Python／.NET）。本手冊採「新手可讀懂原理、專業人員可直接取用指令與程式碼」雙軌撰寫方式。</p>
+</header>
+
+<section id="ch1">
+<h2>一、基本觀念（新手導讀）</h2>
+
+<h3 id="ch1-1">1. 用白話比喻解釋 TLS／TLS 1.3／握手／加密套件</h3>
+
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p>把兩台電腦之間的通訊想像成「兩個人在公開的廣場上講悄悄話」。廣場上人來人往（網際網路），任何人都可能偷聽（竊聽）或假冒對方遞紙條（中間人攻擊）。<b>TLS（Transport Layer Security）</b>就是雙方在開口說真正的話之前，先用一套「暗號約定流程」確認彼此身分、約定好只有兩人看得懂的密語，之後所有對話都用這個密語加密。</p>
+</div>
+
+<p><b>握手（Handshake）</b>就是「約定暗號」的過程：</p>
+<ul>
+  <li>用戶端（Client）先說：「我懂這些暗號種類（Cipher Suite 清單），你選一個。」</li>
+  <li>伺服器（Server）回覆：「好，我們用這一種，這是我的身分證明（憑證／Certificate）。」</li>
+  <li>雙方各自算出一把只有彼此知道的鑰匙（透過金鑰交換演算法，例如 Diffie-Hellman）。</li>
+  <li>之後的資料都用這把鑰匙加解密，外人即使攔截也只看到亂碼。</li>
+</ul>
+
+<p><b>加密套件（Cipher Suite）</b>是一整組演算法的組合，包含：金鑰交換演算法、身分驗證演算法、對稱加密演算法、雜湊演算法。TLS 1.3 大幅簡化了這組合，拿掉許多已知不安全的演算法（例如 RSA 金鑰交換、CBC 模式的加密、SHA-1）。</p>
+
+<h3 id="ch1-2">2. 為何要從舊版 TLS 升級到 1.3</h3>
+
+<table>
+<tr><th>面向</th><th>TLS 1.0／1.1／1.2 的問題</th><th>TLS 1.3 的改善</th></tr>
+<tr><td>安全性</td><td>存在已知弱點（BEAST、POODLE、Logjam 等），支援不安全的加密套件（RC4、3DES、CBC 模式）</td><td>移除所有已知不安全演算法，只保留現代安全的 AEAD 加密套件（如 AES-GCM、ChaCha20-Poly1305）</td></tr>
+<tr><td>Forward Secrecy（前向保密）</td><td>TLS 1.2 可選用不具前向保密的 RSA 金鑰交換，一旦私鑰外洩，過去攔截的封包可被回溯解密</td><td>強制使用 Ephemeral Diffie-Hellman，每次連線金鑰皆不同，私鑰外洩也無法回溯解密歷史流量</td></tr>
+<tr><td>握手效能</td><td>完整握手需要 2-RTT（來回兩次）</td><td>完整握手縮短為 1-RTT；支援 0-RTT（Zero Round Trip Time）重連機制，進一步降低延遲</td></tr>
+<tr><td>握手內容保護</td><td>握手過程中憑證等資訊以明文傳輸</td><td>握手後段內容（含伺服器憑證）已加密，減少可被觀察的資訊</td></tr>
+</table>
+
+<div class="box step">
+  <div class="box-title">操作步驟提示</div>
+  <p>本手冊的操作順序建議為：<b>先確認現況（第二章）→ 依語言調整介接設定（第三章）→ 用腳本驗證（第四章）→ 遇到問題查第五章 → 上線前對照第六章清單</b>。</p>
+</div>
+
+<h3 id="ch1-3">3. 名詞速查表</h3>
+<table>
+<tr><th>名詞</th><th>說明</th></tr>
+<tr><td>TLS</td><td>Transport Layer Security，傳輸層安全協定，用於加密網路通訊（HTTPS 即為 HTTP + TLS）</td></tr>
+<tr><td>SSL</td><td>TLS 的前身（Secure Sockets Layer），SSL 2.0／3.0 已被淘汰，現今常誤用「SSL」一詞泛指 TLS</td></tr>
+<tr><td>Handshake（握手）</td><td>用戶端與伺服器建立加密連線前，協商版本、加密套件、交換金鑰、驗證身分的過程</td></tr>
+<tr><td>Cipher Suite（加密套件）</td><td>握手後實際使用的一組加密演算法組合</td></tr>
+<tr><td>Negotiated Protocol（協商結果）</td><td>握手完成後雙方實際採用的 TLS 版本，此為驗證是否成功升級的關鍵欄位</td></tr>
+<tr><td>Forward Secrecy（前向保密）</td><td>即使長期私鑰外洩，過去的通訊內容也無法被回溯解密的特性</td></tr>
+<tr><td>0-RTT</td><td>TLS 1.3 提供的重連加速機制，允許用戶端在完成握手前就送出資料，需注意重放攻擊（Replay Attack）風險</td></tr>
+<tr><td>JSSE</td><td>Java Secure Socket Extension，Java 內建處理 TLS/SSL 的框架</td></tr>
+<tr><td>Schannel</td><td>Windows 作業系統內建的 TLS/SSL 實作元件，.NET Framework 在 Windows 上預設透過 Schannel 處理 TLS</td></tr>
+<tr><td>CA（憑證授權機構）</td><td>Certificate Authority，簽發並保證伺服器憑證真實性的第三方機構</td></tr>
+<tr><td>ALPN</td><td>Application-Layer Protocol Negotiation，握手時順便協商上層應用協定（如 HTTP/2）</td></tr>
+</table>
+</section>
+
+<section id="ch2">
+<h2>二、確認現況（升級前的盤點）</h2>
+
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p>升級前一定要先「盤點」：不知道現況就直接改設定，很容易改壞既有連線。這一章教你怎麼「看」，還不會動手改。</p>
+</div>
+
+<h3 id="ch2-1">1. 確認作業系統底層是否支援 TLS 1.3</h3>
+
+<h4>Linux（以 OpenSSL 版本為準）</h4>
+<p>TLS 1.3 需要 <code>OpenSSL 1.1.1</code> 以上版本（1.1.1 是第一個正式支援 TLS 1.3 的穩定版）。</p>
+<pre><code># 查詢目前系統 OpenSSL 版本
+openssl version -a</code></pre>
+<div class="box result">
+  <div class="box-title">預期成功畫面</div>
+  <pre><code>OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)</code></pre>
+  <p>只要版本號 大於等於 1.1.1，代表底層函式庫已支援 TLS 1.3。</p>
+</div>
+<div class="box warn">
+  <div class="box-title">常見失敗與提醒</div>
+  <p>若顯示 <code>OpenSSL 1.0.2</code> 或更舊版本，代表底層完全不支援 TLS 1.3，必須先升級作業系統套件（如 CentOS 7 內建的 1.0.2 就需要額外編譯或更換發行版）。</p>
+</div>
+
+<h4>Windows（Schannel 支援版本）</h4>
+<div class="box step">
+  <div class="box-title">操作步驟</div>
+  <ol>
+    <li>確認 Windows 版本：<code>winver</code> 或 <code>systeminfo | findstr /B /C:"OS"</code></li>
+    <li>TLS 1.3（透過 Schannel）自 <b>Windows 10 版本 1903 / Windows Server 2022</b> 起才有原生支援；更早版本的 Schannel 不支援 TLS 1.3。</li>
+    <li>檢查登錄檔是否有停用 TLS 1.3（若企業有做安全性強化政策，路徑如下）：</li>
+  </ol>
+  <pre><code>reg query "HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.3"</code></pre>
+</div>
+<div class="box warn">
+  <div class="box-title">提醒</div>
+  <p>Windows Server 2019 及更早版本的 Schannel <b>不支援</b> TLS 1.3，即使應用程式（如 .NET）宣稱支援，實際協商仍會失敗或退回 TLS 1.2，這一點在第三章 .NET 段落會再詳細說明。</p>
+</div>
+
+<h3 id="ch2-2">2. 確認對接 AP Server 目前開放的 TLS 版本與加密套件</h3>
+
+<p>以下列出常見伺服器軟體「查詢目前設定」的方式（僅供查看，尚未涉及修改）：</p>
+
+<table>
+<tr><th>伺服器</th><th>設定檔／檢查方式</th><th>查看重點</th></tr>
+<tr><td>Nginx</td><td><code>nginx -T | grep -i ssl_protocols</code></td><td>確認 <code>ssl_protocols</code> 指令中是否含 <code>TLSv1.3</code>，Nginx 需 1.13.0 以上搭配 OpenSSL 1.1.1 以上才支援</td></tr>
+<tr><td>Apache HTTPD</td><td><code>apachectl -M | grep ssl</code> 及檢查 <code>SSLProtocol</code> 指令</td><td>需 Apache 2.4.37 以上搭配 OpenSSL 1.1.1 以上；確認 <code>SSLProtocol</code> 未排除 TLSv1.3</td></tr>
+<tr><td>Tomcat</td><td>檢查 <code>server.xml</code> 中 Connector 的 <code>sslEnabledProtocols</code> 屬性</td><td>需 Tomcat 9.0.x（搭配 JDK 11 以上或 OpenSSL-based Connector）以上；純 JSSE 需底層 JDK 支援 TLS 1.3（JDK 11 以上原生支援）</td></tr>
+<tr><td>IIS</td><td>使用 <code>reg query</code> 檢查 Schannel 機碼，或用 <code>Get-TlsCipherSuite</code>（PowerShell）</td><td>需 Windows Server 2022 以上，IIS 本身不單獨控制版本，完全依賴底層 Schannel</td></tr>
+<tr><td>F5 BIG-IP</td><td>於 GUI 查看 Local Traffic 到 Profiles 到 SSL 到 Client(Server)，或 <code>tmsh list ltm profile client-ssl</code></td><td>需 BIG-IP 版本 15.1 以上且授權含 TLS 1.3 支援，檢查 Cipher Group 是否含 TLS 1.3 相關套件</td></tr>
+</table>
+
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p>如果你不是這台伺服器的管理者（例如你只是要串接對方的 API），你不需要登入對方主機，直接用下一節的 <code>openssl s_client</code> 或 <code>nmap</code> 從外部檢測即可，這是最常見也最實用的做法。</p>
+</div>
+
+<h3 id="ch2-3">3. 使用 openssl s_client、curl、nmap 檢測遠端伺服器</h3>
+
+<h4>方法一：openssl s_client（最常用，逐一指定版本測試）</h4>
+<div class="box step">
+  <div class="box-title">操作步驟</div>
+  <p>將 <code>example.com:443</code> 換成實際要測試的主機與埠號：</p>
+  <pre><code># 測試是否可用 TLS 1.3 連線
+openssl s_client -connect example.com:443 -tls1_3
+
+# 測試是否仍可用 TLS 1.0（用來確認舊版是否已停用）
+openssl s_client -connect example.com:443 -tls1</code></pre>
+</div>
+<div class="box result">
+  <div class="box-title">預期成功畫面（協商到 TLS 1.3）</div>
+  <pre><code>New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+...
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384</code></pre>
+  <p>關鍵字：<code>Protocol : TLSv1.3</code>。只要看到這行，即代表此連線確實使用 TLS 1.3。</p>
+</div>
+<div class="box warn">
+  <div class="box-title">常見失敗畫面與原因</div>
+  <pre><code>140177831907136:error:1409442E:SSL routines:ssl3_read_bytes:tlsv1 alert protocol version:...</code></pre>
+  <p>代表伺服器不支援你指定的版本（此例為拒絕 TLS 1.0），通常是好事（代表舊版已停用）；但若指定 <code>-tls1_3</code> 卻出現此錯誤，代表伺服器尚未開放 TLS 1.3。</p>
+</div>
+
+<h4>方法二：curl（模擬實際 API 呼叫情境）</h4>
+<pre><code># 強制以 TLS 1.3 呼叫，並顯示詳細握手過程
+curl -v --tlsv1.3 --tls-max 1.3 https://example.com/api/health</code></pre>
+<div class="box result">
+  <div class="box-title">預期成功畫面</div>
+  <pre><code>* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* Server certificate:
+*  subject: CN=example.com
+&lt; HTTP/1.1 200 OK</code></pre>
+  <p>關鍵字：<code>SSL connection using TLSv1.3</code>。</p>
+</div>
+<div class="box warn">
+  <div class="box-title">常見錯誤</div>
+  <p><code>curl: (35) OpenSSL/x.x.x: error:...unsupported protocol</code>：通常代表本機 curl 所連結的 OpenSSL 版本過舊，或對方伺服器不支援 TLS 1.3。可先用 <code>curl -V</code> 確認 curl 連結的 SSL 函式庫版本。</p>
+</div>
+
+<h4>方法三：nmap ssl-enum-ciphers（一次列出對方所有開放的版本與加密套件，適合稽核）</h4>
+<pre><code>nmap --script ssl-enum-ciphers -p 443 example.com</code></pre>
+<div class="box result">
+  <div class="box-title">預期輸出範例</div>
+  <pre><code>443/tcp open  https
+| ssl-enum-ciphers:
+|   TLSv1.2:
+|     ciphers:
+|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+|   TLSv1.3:
+|     ciphers:
+|       TLS_AKE_WITH_AES_256_GCM_SHA384 (ecdh_x25519) - A
+|     cipher preference: server
+|_  least strength: A</code></pre>
+  <p>此工具的優勢：一次列出「所有」開放版本，方便確認舊版（如 TLSv1、TLSv1.1）是否已經完全關閉，而不只是單點測試。</p>
+</div>
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p>如果輸出中完全沒有 <code>TLSv1.3</code> 這個區塊，代表對方伺服器目前根本沒開放 TLS 1.3，這種情況需要請對方（伺服器維運方）先行升級，不是你這邊改程式就能解決的。</p>
+</div>
+</section>
+
+<section id="ch3">
+<h2>三、開發語言介接設定與驗證</h2>
+
+<h3 id="ch3-1">1. Java <span class="badge pro">專業</span></h3>
+
+<h4>環境版本需求</h4>
+<table>
+<tr><th>JDK 版本</th><th>TLS 1.3 支援狀況</th></tr>
+<tr><td>JDK 8（小於等於 8u261）</td><td>不支援</td></tr>
+<tr><td>JDK 8u262 以上</td><td>自 8u262 起回移（backport）支援 TLS 1.3，但預設仍以 TLS 1.2 為上限，需手動啟用</td></tr>
+<tr><td>JDK 11 及以上</td><td>原生支援，且預設協定清單已包含 TLSv1.3</td></tr>
+</table>
+<div class="box warn">
+  <div class="box-title">特別提醒（JDK8 版號限制）</div>
+  <p>務必確認 JDK8 的實際小版號是否 <b>大於等於 8u262</b>，可用 <code>java -version</code> 查詢。低於此版號即使程式碼寫法完全正確，仍無法協商到 TLS 1.3。</p>
+</div>
+
+<h4>設定方式：JVM 啟動參數</h4>
+<pre><code># 明確指定啟用的 TLS 版本（可放在啟動指令或 JAVA_OPTS）
+-Dhttps.protocols=TLSv1.3</code></pre>
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p>這個參數只影響 Java 內建的 <code>HttpsURLConnection</code> 走 <code>https.protocols</code> 這個系統屬性的呼叫方式；若你的程式碼是自行建立 <code>SSLContext</code>（如下方範例），則要在程式碼裡指定，JVM 參數不一定會生效，兩者請擇一並確認實際生效的是哪一種。</p>
+</div>
+
+<h4>程式碼範例：SSLContext 指定 TLS 1.3</h4>
+<pre><code>import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URL;
+
+public class Tls13Client {
+    public static void main(String[] args) throws Exception {
+        // 建立指定 TLSv1.3 的 SSLContext
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+        sslContext.init(null, null, null); // 使用預設信任庫與金鑰庫
+
+        SSLSocketFactory factory = sslContext.getSocketFactory();
+
+        URL url = new URL("https://example.com/api/health");
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setSSLSocketFactory(factory);
+        conn.connect();
+
+        // 驗證是否真的協商到 TLS 1.3：印出 Negotiated Protocol
+        System.out.println("Negotiated Protocol: " + conn.getCipherSuite());
+        System.out.println("Response code: " + conn.getResponseCode());
+    }
+}</code></pre>
+
+<h4>程式碼範例：直接以 SSLSocket 確認 Negotiated Protocol</h4>
+<pre><code>import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSession;
+
+public class Tls13SocketCheck {
+    public static void main(String[] args) throws Exception {
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.3");
+        sslContext.init(null, null, null);
+
+        try (SSLSocket socket = (SSLSocket) sslContext.getSocketFactory()
+                .createSocket("example.com", 443)) {
+            socket.setEnabledProtocols(new String[]{"TLSv1.3"});
+            socket.startHandshake();
+
+            SSLSession session = socket.getSession();
+            // 這裡印出的 Protocol 就是實際協商結果，是判斷成功與否的唯一依據
+            System.out.println("Negotiated Protocol: " + session.getProtocol());
+            System.out.println("Negotiated Cipher Suite: " + session.getCipherSuite());
+        }
+    }
+}</code></pre>
+<div class="box result">
+  <div class="box-title">預期成功輸出</div>
+  <pre><code>Negotiated Protocol: TLSv1.3
+Negotiated Cipher Suite: TLS_AES_256_GCM_SHA384</code></pre>
+</div>
+<div class="box warn">
+  <div class="box-title">常見錯誤訊息與排除方法</div>
+  <table>
+    <tr><th>錯誤訊息</th><th>常見原因</th><th>排除方法</th></tr>
+    <tr><td><code>SSLHandshakeException: No appropriate protocol</code></td><td>JDK 版本過舊，不支援 TLSv1.3</td><td>升級至 JDK 11 以上，或 JDK8u262 以上並確認啟用方式正確</td></tr>
+    <tr><td><code>SSLHandshakeException: Received fatal alert: protocol_version</code></td><td>伺服器不支援 TLS 1.3，握手時被拒絕</td><td>回到第二章確認伺服器端實際開放版本</td></tr>
+    <tr><td><code>PKIX path building failed</code></td><td>與 TLS 版本無關，是憑證信任鏈問題（常被誤認為版本問題）</td><td>檢查用戶端信任庫（cacerts）是否含對方憑證的根 CA</td></tr>
+  </table>
+</div>
+
+<h3 id="ch3-2">2. Python <span class="badge pro">專業</span></h3>
+
+<h4>環境版本需求</h4>
+<table>
+<tr><th>元件</th><th>需求版本</th></tr>
+<tr><td>Python</td><td>3.7 以上（3.7 起 <code>ssl</code> 模組正式支援 TLS 1.3）</td></tr>
+<tr><td>底層 OpenSSL</td><td>Python 直譯器編譯時所連結的 OpenSSL 需大於等於 1.1.1，可用下方指令確認</td></tr>
+</table>
+<pre><code># 確認 Python 內建 ssl 模組連結的 OpenSSL 版本
+python3 -c "import ssl; print(ssl.OPENSSL_VERSION)"</code></pre>
+<div class="box warn">
+  <div class="box-title">提醒</div>
+  <p>即使 Python 版本是 3.7 以上，若該 Python 是用舊版 OpenSSL（如 1.0.2）編譯而成（常見於某些較舊的 Linux 發行版內建 Python），仍然無法使用 TLS 1.3。這是最常被忽略的一點。</p>
+</div>
+
+<h4>設定方式：ssl 模組直接使用</h4>
+<pre><code>import ssl
+import socket
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.minimum_version = ssl.TLSVersion.TLSv1_3  # 強制最低版本為 TLS 1.3
+context.maximum_version = ssl.TLSVersion.TLSv1_3
+
+with socket.create_connection(("example.com", 443)) as sock:
+    with context.wrap_socket(sock, server_hostname="example.com") as ssock:
+        # 驗證是否真的協商到 TLS 1.3
+        print("Negotiated Protocol:", ssock.version())
+        print("Negotiated Cipher:", ssock.cipher())</code></pre>
+<div class="box result">
+  <div class="box-title">預期成功輸出</div>
+  <pre><code>Negotiated Protocol: TLSv1.3
+Negotiated Cipher: ('TLS_AES_256_GCM_SHA384', 'TLSv1.3', 256)</code></pre>
+</div>
+
+<h4>設定方式：requests 套件搭配自訂 HTTPAdapter</h4>
+<div class="box tip">
+  <div class="box-title">新手補充說明</div>
+  <p><code>requests</code> 套件預設不會讓你直接指定 TLS 版本，需要透過自訂 <code>HTTPAdapter</code>，把剛剛設定好的 <code>SSLContext</code> 塞進去。</p>
+</div>
+<pre><code>import ssl
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
+
+class TLS13Adapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        context = create_urllib3_context()
+        context.minimum_version = ssl.TLSVersion.TLSv1_3
+        kwargs["ssl_context"] = context
+        return super().init_poolmanager(*args, **kwargs)
+
+session = requests.Session()
+session.mount("https://", TLS13Adapter())
+
+resp = session.get("https://example.com/api/health")
+print("HTTP Status:", resp.status_code)
+
+# 驗證實際協商版本：從底層 socket 取得
+raw_sock = resp.raw._connection.sock  # 視 urllib3 版本，屬性名稱可能略有差異
+print("Negotiated Protocol:", raw_sock.version())</code></pre>
+<div class="box warn">
+  <div class="box-title">常見錯誤訊息與排除方法</div>
+  <table>
+    <tr><th>錯誤訊息</th><th>常見原因</th><th>排除方法</th></tr>
+    <tr><td><code>ssl.SSLError: [SSL: UNSUPPORTED_PROTOCOL]</code></td><td>本機 OpenSSL 或伺服器不支援指定版本</td><td>先用 <code>python3 -c "import ssl; print(ssl.OPENSSL_VERSION)"</code> 確認本機版本，再用第二章工具確認伺服器</td></tr>
+    <tr><td><code>AttributeError: module 'ssl' has no attribute 'TLSVersion'</code></td><td>Python 版本低於 3.7</td><td>升級 Python 至 3.7 以上</td></tr>
+    <tr><td><code>requests.exceptions.SSLError: certificate verify failed</code></td><td>非版本問題，是憑證驗證失敗（常與 TLS 1.3 問題混淆）</td><td>確認 <code>certifi</code> 套件版本與對方憑證鏈是否正確</td></tr>
+  </table>
+</div>
+
+<h3 id="ch3-3">3. .NET <span class="badge pro">專業</span></h3>
+
+<h4>.NET Core／.NET 5+ 與 .NET Framework 4.8 的差異</h4>
+<table>
+<tr><th>項目</th><th>.NET Core 3.1 / .NET 5 以上</th><th>.NET Framework 4.8</th></tr>
+<tr><td>TLS 1.3 支援</td><td>原生支援（在支援的作業系統上）</td><td>不支援應用層直接協商 TLS 1.3；完全依賴作業系統 Schannel</td></tr>
+<tr><td>底層實作</td><td>.NET Core 在 Windows 上仍使用 Schannel，在 Linux 上使用 OpenSSL</td><td>僅能透過 Schannel</td></tr>
+<tr><td>設定方式</td><td>可在程式碼中以 <code>SslProtocols.Tls13</code> 明確指定</td><td>幾乎無法在程式碼層級強制指定 TLS 1.3，需依賴 OS 更新與登錄檔設定</td></tr>
+</table>
+<div class="box warn">
+  <div class="box-title">.NET Framework 特別提醒</div>
+  <p>在 .NET Framework 4.8 情境下，<b>作業系統（Schannel）是否支援 TLS 1.3 才是關鍵</b>：即使程式碼寫 <code>SecurityProtocolType.Tls13</code>，在不支援 TLS 1.3 的 Windows Server（如 2016、2019）上仍會拋出例外或直接被忽略。這是 .NET 介接最常見的誤解來源，請務必先完成第二章的 OS 檢查。</p>
+</div>
+
+<h4>程式碼範例：.NET Core / .NET 5+（HttpClientHandler）</h4>
+<pre><code>using System;
+using System.Net.Http;
+using System.Net.Security;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        var handler = new HttpClientHandler
+        {
+            SslProtocols = SslProtocols.Tls13 // 明確指定僅使用 TLS 1.3
+        };
+
+        using var client = new HttpClient(handler);
+        var response = await client.GetAsync("https://example.com/api/health");
+
+        Console.WriteLine($"HTTP Status: {response.StatusCode}");
+        // 注意：HttpClient 本身不直接暴露協商版本，
+        // 若需要精確驗證，請改用下方 SslStream 寫法
+    }
+}</code></pre>
+
+<h4>程式碼範例：以 SslStream 直接驗證 Negotiated Protocol</h4>
+<pre><code>using System;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
+
+class TlsCheck
+{
+    static void Main()
+    {
+        using var client = new TcpClient("example.com", 443);
+        using var sslStream = new SslStream(client.GetStream(), false);
+
+        sslStream.AuthenticateAsClient(
+            "example.com",
+            null,
+            SslProtocols.Tls13, // 僅允許 TLS 1.3，若協商失敗會直接拋出例外
+            checkCertificateRevocation: true);
+
+        // 驗證是否真的協商到 TLS 1.3
+        Console.WriteLine($"Negotiated Protocol: {sslStream.SslProtocol}");
+        Console.WriteLine($"Cipher Algorithm: {sslStream.CipherAlgorithm}, Strength: {sslStream.CipherStrength}");
+    }
+}</code></pre>
+<div class="box result">
+  <div class="box-title">預期成功輸出</div>
+  <pre><code>Negotiated Protocol: Tls13
+Cipher Algorithm: Aes256, Strength: 256</code></pre>
+</div>
+<div class="box warn">
+  <div class="box-title">常見錯誤訊息與排除方法</div>
+  <table>
+    <tr><th>錯誤訊息</th><th>常見原因</th><th>排除方法</th></tr>
+    <tr><td><code>AuthenticationException: The client and server cannot communicate, because they do not possess a common algorithm</code></td><td>作業系統 Schannel 不支援 TLS 1.3，或伺服器不支援</td><td>確認 Windows 版本（見第二章），必要時升級 OS 或改用支援 TLS 1.3 的中介環境</td></tr>
+    <tr><td><code>NotSupportedException: The requested security protocol is not supported</code></td><td>.NET Framework 版本過舊，或系統管理原則封鎖了 TLS 1.3</td><td>檢查登錄檔 Schannel 設定，並確認 .NET Framework 版本大於等於 4.8</td></tr>
+  </table>
+</div>
+</section>
+
+<section id="ch4">
+<h2>四、測試驗證腳本（可直接執行）</h2>
+
+<h3 id="ch4-1">1. Linux Shell Script</h3>
+<div class="box step">
+  <div class="box-title">操作步驟</div>
+  <ol>
+    <li>建立檔案：<code>vi check_tls13.sh</code>，貼上下方內容並儲存</li>
+    <li>賦予執行權限：<code>chmod +x check_tls13.sh</code></li>
+    <li>執行：<code>./check_tls13.sh example.com 443</code></li>
+  </ol>
+</div>
+<pre><code>#!/bin/bash
+# check_tls13.sh - 檢查目標主機 TLS 1.3 支援狀況與舊版協定是否已停用
+# 用法：./check_tls13.sh &lt;host&gt; &lt;port&gt;
+
+HOST=${1:-example.com}
+PORT=${2:-443}
+
+echo "=== 檢查 TLS 1.3 是否可連線 ==="
+echo | openssl s_client -connect "${HOST}:${PORT}" -tls1_3 2>/dev/null | grep -E "Protocol|Cipher is"
+
+echo ""
+echo "=== 檢查 TLS 1.0 是否已停用（應該要失敗） ==="
+echo | openssl s_client -connect "${HOST}:${PORT}" -tls1 2>&1 | grep -E "Protocol|alert|error" 
+
+echo ""
+echo "=== 檢查 TLS 1.1 是否已停用（應該要失敗） ==="
+echo | openssl s_client -connect "${HOST}:${PORT}" -tls1_1 2>&1 | grep -E "Protocol|alert|error"
+
+echo ""
+echo "=== curl 實際 API 呼叫測試 ==="
+curl -sv --tlsv1.3 --tls-max 1.3 "https://${HOST}:${PORT}/" 2>&1 | grep -E "SSL connection|HTTP/"</code></pre>
+<div class="box result">
+  <div class="box-title">預期輸出判讀方式</div>
+  <ul>
+    <li>「檢查 TLS 1.3 是否可連線」區塊出現 <code>Protocol : TLSv1.3</code> 代表 TLS 1.3 可用</li>
+    <li>「檢查 TLS 1.0／1.1 是否已停用」區塊出現 <code>alert protocol version</code> 或連線錯誤，代表舊版確實已停用（這是好結果）</li>
+    <li>若「應該要失敗」的區塊反而顯示 <code>Protocol : TLSv1</code>，代表舊版協定尚未關閉，需要回頭調整伺服器設定</li>
+  </ul>
+</div>
+
+<h3 id="ch4-2">2. Windows Batch（.bat，需另行安裝 OpenSSL for Windows）</h3>
+<div class="box step">
+  <div class="box-title">操作步驟</div>
+  <ol>
+    <li>先安裝 OpenSSL for Windows（例如透過 Chocolatey：<code>choco install openssl</code>），並確認 <code>openssl</code> 指令已加入系統 PATH</li>
+    <li>用記事本建立 <code>check_tls13.bat</code>，貼上下方內容</li>
+    <li>雙擊執行，或於命令提示字元執行：<code>check_tls13.bat example.com 443</code></li>
+  </ol>
+</div>
+<pre><code>@echo off
+REM check_tls13.bat - 需先安裝 OpenSSL for Windows
+REM 用法：check_tls13.bat host port
+
+set HOST=%1
+set PORT=%2
+if "%HOST%"=="" set HOST=example.com
+if "%PORT%"=="" set PORT=443
+
+echo === 檢查 TLS 1.3 是否可連線 ===
+echo. | openssl s_client -connect %HOST%:%PORT% -tls1_3 2>nul | findstr /C:"Protocol" /C:"Cipher is"
+
+echo.
+echo === 檢查 TLS 1.0 是否已停用（應該要失敗） ===
+echo. | openssl s_client -connect %HOST%:%PORT% -tls1 2>&1 | findstr /C:"Protocol" /C:"alert" /C:"error"
+
+echo.
+echo === curl 實際 API 呼叫測試 ===
+curl -sv --tlsv1.3 --tls-max 1.3 https://%HOST%:%PORT%/ 2>&1 | findstr /C:"SSL connection" /C:"HTTP/"
+
+pause</code></pre>
+<div class="box warn">
+  <div class="box-title">常見失敗原因</div>
+  <p>若出現 <code>'openssl' 不是內部或外部命令</code>，代表 PATH 未設定成功，請確認安裝路徑（例如 <code>C:\Program Files\OpenSSL-Win64\bin</code>）已加入系統環境變數 PATH，並重新開啟命令提示字元。</p>
+</div>
+
+<h3 id="ch4-3">3. Windows PowerShell（不需額外安裝任何工具）</h3>
+<div class="box step">
+  <div class="box-title">操作步驟</div>
+  <ol>
+    <li>以系統管理員身分開啟 PowerShell</li>
+    <li>若首次執行腳本被阻擋，先執行一次：<code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</code></li>
+    <li>建立檔案 <code>Check-Tls13.ps1</code>，貼上下方內容</li>
+    <li>執行：<code>.\Check-Tls13.ps1 -HostName example.com -Port 443</code></li>
+  </ol>
+</div>
+<pre><code>param(
+    [string]$HostName = "example.com",
+    [int]$Port = 443
+)
+
+function Test-TlsVersion {
+    param([string]$Protocol)
+
+    try {
+        $tcpClient = New-Object System.Net.Sockets.TcpClient($HostName, $Port)
+        $sslStream = New-Object System.Net.Security.SslStream($tcpClient.GetStream(), $false)
+
+        $enum = [System.Security.Authentication.SslProtocols]::$Protocol
+        $sslStream.AuthenticateAsClient($HostName, $null, $enum, $false)
+
+        Write-Host "[$Protocol] 連線成功，實際協商版本：$($sslStream.SslProtocol)" -ForegroundColor Green
+
+        $sslStream.Close()
+        $tcpClient.Close()
+    }
+    catch {
+        Write-Host "[$Protocol] 連線失敗：$($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+Write-Host "=== 檢查 TLS 1.3 是否可連線 ==="
+Test-TlsVersion -Protocol "Tls13"
+
+Write-Host ""
+Write-Host "=== 檢查 TLS 1.0 是否已停用（應該要顯示失敗） ==="
+Test-TlsVersion -Protocol "Tls"
+
+Write-Host ""
+Write-Host "=== 檢查 TLS 1.1 是否已停用（應該要顯示失敗） ==="
+Test-TlsVersion -Protocol "Tls11"</code></pre>
+<div class="box result">
+  <div class="box-title">預期輸出判讀方式</div>
+  <pre><code>=== 檢查 TLS 1.3 是否可連線 ===
+[Tls13] 連線成功，實際協商版本：Tls13
+
+=== 檢查 TLS 1.0 是否已停用（應該要顯示失敗） ===
+[Tls] 連線失敗：The client and server cannot communicate...</code></pre>
+  <p>綠色訊息代表該版本可成功協商；黃色訊息代表連線失敗——對 TLS 1.3 而言黃色是壞消息，對 TLS 1.0／1.1 而言黃色反而是好消息（代表已停用）。</p>
+</div>
+<div class="box warn">
+  <div class="box-title">常見問題</div>
+  <p>若 PowerShell 版本或 .NET Framework 版本過舊，<code>SslProtocols.Tls13</code> 這個列舉值可能不存在，會出現找不到型別的錯誤，此時代表本機環境（用來執行檢測的這台電腦）本身就需要更新 .NET Framework 或 Windows 版本。</p>
+</div>
+</section>
+
+<section id="ch5">
+<h2>五、常見問題排除</h2>
+
+<h3 id="ch5-1">1. 依角色分類的常見迷思</h3>
+
+<h4>迷思一：「伺服器回應 200 OK，就代表用的是 TLS 1.3」</h4>
+<div class="box warn">
+  <div class="box-title">常見迷思澄清</div>
+  <p>錯誤。API 回應 200 OK 只代表「連線建立成功」，不代表協商版本一定是 TLS 1.3，伺服器可能同時開放 1.2 與 1.3，用戶端在未強制指定的情況下，可能被降級協商到 TLS 1.2 仍然成功回應。<b>唯一正確的判斷方式，是實際印出 Negotiated Protocol（見第三章各語言範例）</b>，而不是看 HTTP 狀態碼。</p>
+</div>
+
+<h4>依角色分類的排查方向</h4>
+<table>
+<tr><th>角色／情境</th><th>常見狀況</th><th>排查重點</th></tr>
+<tr><td>伺服器不支援</td><td>用戶端已正確設定，但握手時被拒絕或自動降版</td><td>回到第二章，用 nmap／openssl s_client 直接對伺服器檢測，確認 TLS 1.3 是否真的有開放</td></tr>
+<tr><td>用戶端版本過舊</td><td>程式碼設定看似正確，卻始終協商不到 TLS 1.3</td><td>檢查語言執行環境版本（JDK／Python／.NET）與底層函式庫（OpenSSL／Schannel）版本，見第三章「環境版本需求」</td></tr>
+<tr><td>程式設定錯誤</td><td>使用了看似正確但實際無效的參數（如只設 JVM 參數卻自建 SSLContext）</td><td>確認程式碼中「實際生效」的設定路徑只有一個，避免多處設定互相打架</td></tr>
+<tr><td>誤判連線成功即為 TLS 1.3</td><td>看到 API 呼叫成功就結案，未實際檢查協商版本</td><td>務必印出並記錄 Negotiated Protocol 欄位作為驗收證據</td></tr>
+</table>
+
+<h3 id="ch5-2">2. 現象／原因／處理對照表</h3>
+<table>
+<tr><th>現象</th><th>可能原因</th><th>處理方式</th></tr>
+<tr><td>握手時直接被拒絕（connection reset）</td><td>伺服器完全未開放 TLS 1.3；或防火牆／WAF 阻擋了特定 Cipher Suite</td><td>用 nmap 確認伺服器實際開放版本；檢查中間是否有 WAF/Proxy 進行 TLS 終止（termination）</td></tr>
+<tr><td>本機測試（openssl/curl）成功，但應用程式仍失敗</td><td>應用程式使用的執行環境（JDK/Python/.NET Runtime）與本機命令列工具連結的函式庫不同</td><td>確認應用程式實際執行時所用的 Runtime 版本與底層 TLS 函式庫版本，而非只看本機 CLI 工具版本</td></tr>
+<tr><td>間歇性失敗（有時成功有時失敗）</td><td>後端為多台伺服器組成的叢集，部分節點尚未完成 TLS 1.3 升級</td><td>對叢集中每一個實際節點（而非只測 VIP／負載平衡器）分別執行第二章的檢測工具</td></tr>
+<tr><td>憑證相關錯誤（誤以為是版本問題）</td><td>憑證信任鏈、憑證過期、SNI 設定錯誤</td><td>先確認錯誤訊息是否包含 <code>certificate</code>／<code>PKIX</code> 等字樣，這類錯誤與 TLS 版本無關，需另外排查憑證鏈</td></tr>
+<tr><td>.NET Framework 環境始終無法使用 TLS 1.3</td><td>作業系統 Schannel 版本過舊（如 Windows Server 2019 以前）</td><td>需升級作業系統版本，應用程式層級無法繞過此限制</td></tr>
+</table>
+</section>
+
+<section id="ch6">
+<h2>六、上線前檢查清單</h2>
+<div class="box tip">
+  <div class="box-title">使用方式</div>
+  <p>建議將此清單複製至內部工單或變更管理系統，逐項確認並保留每一項的檢測輸出畫面作為佐證。</p>
+</div>
+<ul class="checklist">
+  <li>已使用 <code>openssl version</code> 或對應指令確認用戶端主機底層函式庫版本支援 TLS 1.3</li>
+  <li>已使用 <code>nmap --script ssl-enum-ciphers</code> 或 <code>openssl s_client</code> 確認目標 API Server 已開放 TLS 1.3</li>
+  <li>已確認目標 API Server 的 TLS 1.0／1.1（視公司政策，必要時含 1.2）已停用或訂有汰換計畫</li>
+  <li>Java／Python／.NET 各介接程式已於程式碼或設定中明確指定使用 TLS 1.3</li>
+  <li>已於各語言環境中實際印出 Negotiated Protocol，並確認結果為 <code>TLSv1.3</code>／<code>Tls13</code>，而非僅以 HTTP 200 作為判斷依據</li>
+  <li>已於 Linux 環境執行測試腳本並保留輸出紀錄</li>
+  <li>已於 Windows 環境以 PowerShell（或搭配 OpenSSL 的 Batch）執行測試腳本並保留輸出紀錄</li>
+  <li>已確認 .NET Framework 4.8 情境下，作業系統（Schannel）版本確實支援 TLS 1.3（如適用）</li>
+  <li>已針對叢集／多節點架構，逐一節點完成檢測，而非僅測試負載平衡器 VIP</li>
+  <li>已將本次升級的憑證信任鏈一併確認，排除「誤判為版本問題」的憑證相關錯誤</li>
+  <li>已將所有測試指令、程式碼片段與輸出結果歸檔，作為稽核與回溯依據</li>
+  <li>已規劃降版（Rollback）方案，若上線後發現既有舊系統無法相容 TLS 1.3 時的因應措施</li>
+</ul>
+</section>
+
+<footer>
+  <p>本手冊涵蓋基本觀念、現況盤點、Java／Python／.NET 三種語言介接設定、Linux／Windows 測試腳本、常見問題排除與上線檢查清單，可作為企業內部 TLS 1.3 升級專案的獨立操作依據。</p>
+  <p class="top-link"><a href="#toc" class="anchor-link">回到目錄</a></p>
+</footer>
+</main>
+</div>
+</body>
+</html>
