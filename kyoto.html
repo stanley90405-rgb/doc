@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京都大阪 7天6夜 秋季旅遊全攻略</title>
+    <style>
+        /* 基礎色彩與字型設定 */
+        :root {
+            --primary-color: #D35400; /* 秋季楓葉橘 */
+            --secondary-color: #E67E22;
+            --bg-color: #FDFBF7;
+            --text-color: #333333;
+            --light-bg: #FFFFFF;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "微軟正黑體", sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3, h4 { color: var(--primary-color); }
+        
+        /* 頂部橫幅 */
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80') center/cover;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        header h1 { color: white; margin-bottom: 10px; font-size: 2.2rem; }
+        .overview-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 600px;
+            margin: 20px auto 0;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        /* 浮動導覽列 */
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--light-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px;
+            justify-content: center;
+            gap: 15px;
+        }
+        nav a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #fff3e0;
+            transition: all 0.3s;
+        }
+        nav a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 內容區塊 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        section { padding-top: 60px; margin-top: -40px; margin-bottom: 40px; }
+        
+        /* 行程卡片與表格 */
+        .day-card {
+            background: var(--light-bg);
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary-color);
+        }
+        .day-card h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .table-responsive { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; }
+        th { background-color: #fdf3e8; color: var(--text-color); font-weight: bold; }
+        tr:hover { background-color: #fcfcfc; }
+
+        /* 美食區塊網格 */
+        .area-section { margin-bottom: 30px; }
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .food-card {
+            background: var(--light-bg);
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .food-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .food-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .rating { color: #F39C12; font-weight: bold; background: #FEF5E7; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem;}
+        .price { color: #27AE60; font-weight: bold; font-size: 0.9rem; margin-top: 10px;}
+        .map-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        .map-btn:hover { background: #e0e0e0; }
+
+        /* 梅田指南區塊 */
+        .guide-box {
+            background: #fff8f0;
+            border: 2px dashed var(--secondary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        ul.mall-list li { margin-bottom: 15px; }
+        ul.mall-list strong { color: var(--primary-color); font-size: 1.1rem;}
+
+        footer { text-align: center; padding: 30px; color: #777; font-size: 0.9rem; }
+
+        /* 行動版優化 */
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.8rem; }
+            nav { justify-content: flex-start; padding-left: 20px; }
+            .day-card { padding: 15px; }
+            th, td { padding: 10px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍁 關西初秋：京都大阪7天6夜巡禮</h1>
+        <div class="overview-box">
+            <p><strong>📅 日期：</strong> 2026/09/28 (一) – 2026/10/04 (日)</p>
+            <p><strong>✈️ 航班：</strong> 國泰航空 (TPE 桃園 ⇄ KIX 關西)</p>
+            <p><strong>🏨 住宿：</strong> Day 1-3 京都四條站 / Day 4-6 大阪難波站</p>
+        </div>
+    </header>
+
+    <nav>
+        <a href="#itinerary">🗓️ 詳細行程</a>
+        <a href="#food">🍽️ 人氣美食</a>
+        <a href="#umeda">🛍️ 梅田攻略</a>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 行程區塊 -->
+        <section id="itinerary">
+            <h2>🗓️ 每日詳細行程規劃</h2>
+            
+            <div class="day-card">
+                <h3>Day 1：9/28 (一) 抵達關西，初探京都</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>15:00</td><td>抵達關西機場 (KIX)</td><td>1.5hr</td><td>入境、領行李、兌換票券</td></tr>
+                        <tr><td>16:30</td><td>前往京都</td><td>1.5hr</td><td>🚆搭乘 JR Haruka 特急 至京都車站 (約80分)</td></tr>
+                        <tr><td>18:00</td><td>轉車至飯店</td><td>30分</td><td>🚇轉乘地鐵烏丸線至「四條站」，辦理入住</td></tr>
+                        <tr><td>18:30</td><td>京都車站周邊晚餐</td><td>2hr</td><td>京都車站周邊或站內地下街用餐</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 2：9/29 (二) 嵐山竹林與金閣寺巡禮</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>09:00</td><td>嵐山竹林小徑、野宮神社</td><td>1.5hr</td><td>🚆四條搭地鐵轉東西線至太秦天神川，轉嵐電至「嵐山」(約40分)</td></tr>
+                        <tr><td>10:30</td><td>天龍寺 (世界遺產)</td><td>1hr</td><td>🚶‍♂️步行約5分鐘</td></tr>
+                        <tr><td>12:00</td><td>嵐山大街午餐 / 渡月橋</td><td>2hr</td><td>🚶‍♂️步行約10分鐘</td></tr>
+                        <tr><td>14:30</td><td>金閣寺 (鹿苑寺)</td><td>1.5hr</td><td>🚌嵐電轉乘至北野白梅町，轉市營公車至「金閣寺道」(約45分)</td></tr>
+                        <tr><td>17:00</td><td>返回四條烏丸 / 晚餐</td><td>-</td><td>🚌搭乘市營公車12號直達「四條烏丸」(約40分)</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 3：9/30 (三) 伏見稻荷與清水寺散策</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>08:30</td><td>伏見稻荷大社 (千本鳥居)</td><td>2hr</td><td>🚆四條搭地鐵至京都站，轉JR奈良線至「稻荷站」(約25分)</td></tr>
+                        <tr><td>11:00</td><td>前往清水寺周邊</td><td>45分</td><td>🚆京阪本線「伏見稻荷」至「清水五條」，步行上山</td></tr>
+                        <tr><td>12:00</td><td>清水坂午餐 / 參拜清水寺</td><td>2.5hr</td><td>🚶‍♂️步行</td></tr>
+                        <tr><td>14:30</td><td>二年坂、三年坂、八坂神社</td><td>2hr</td><td>🚶‍♂️沿著老街一路逛下山至祇園方向</td></tr>
+                        <tr><td>16:30</td><td>祇園、河原町逛街與晚餐</td><td>3hr</td><td>🚶‍♂️步行約10分鐘抵達河原町商圈</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 4：10/1 (四) 移師大阪，感受道頓堀熱情</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>10:00</td><td>飯店退房，前往大阪</td><td>1hr</td><td>🚆搭乘地鐵至京都站轉JR至新大阪，再轉地鐵至難波 (約60-70分)</td></tr>
+                        <tr><td>11:30</td><td>難波站飯店放行李</td><td>30分</td><td>🚶‍♂️步行</td></tr>
+                        <tr><td>13:00</td><td>黑門市場吃午餐</td><td>1.5hr</td><td>🚶‍♂️從難波步行約10分鐘</td></tr>
+                        <tr><td>15:30</td><td>大阪城天守閣</td><td>2hr</td><td>🚇難波搭地鐵轉谷町線至「谷町四丁目」(約25分)</td></tr>
+                        <tr><td>18:30</td><td>道頓堀、心齋橋商圈晚餐</td><td>-</td><td>🚇搭乘地鐵返回難波/心齋橋周邊</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 5：10/2 (五) 海遊館與梅田百萬夜景</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>10:00</td><td>大阪海遊館</td><td>3hr</td><td>🚇難波搭御堂筋線轉中央線至「大阪港」(約30分)</td></tr>
+                        <tr><td>13:30</td><td>天保山購物中心午餐</td><td>1.5hr</td><td>🚶‍♂️海遊館旁步行2分鐘</td></tr>
+                        <tr><td>15:30</td><td>前往梅田逛街</td><td>3hr</td><td>🚇中央線轉御堂筋線至「梅田」(約30分)</td></tr>
+                        <tr><td>18:30</td><td>梅田藍天大廈 展望台</td><td>1.5hr</td><td>🚶‍♂️從JR大阪站步行約12分鐘</td></tr>
+                        <tr><td>20:00</td><td>梅田周邊晚餐</td><td>-</td><td>🚶‍♂️步行返回商圈</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 6：10/3 (六) 難波/新世界深度探索</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>10:00</td><td>難波八阪神社 (巨大獅子頭)</td><td>1hr</td><td>🚶‍♂️從難波站步行約10分鐘</td></tr>
+                        <tr><td>11:30</td><td>通天閣、新世界 (吃串炸)</td><td>2.5hr</td><td>🚇難波搭御堂筋線至「動物園前」(約15分)</td></tr>
+                        <tr><td>15:00</td><td>心齋橋與難波最後採買</td><td>半天</td><td>🚇返回難波，買齊藥妝與伴手禮</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="day-card">
+                <h3>Day 7：10/4 (日) 滿載而歸</h3>
+                <div class="table-responsive">
+                    <table>
+                        <tr><th>時間</th><th>行程景點</th><th>停留</th><th>交通方式與預估時間</th></tr>
+                        <tr><td>上午</td><td>悠閒早餐、飯店退房</td><td>-</td><td>-</td></tr>
+                        <tr><td>起飛前4h</td><td>前往關西機場 (KIX)</td><td>1hr</td><td>🚆南海難波站搭乘 南海電鐵特急 Rapi:t 直達機場 (約40分)</td></tr>
+                        <tr><td>起飛前3h</td><td>機場報到、免稅店採買</td><td>-</td><td>-</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 美食區塊 -->
+        <section id="food">
+            <h2>🍽️ Tabelog 高分平價美食清單 (￥5000內)</h2>
+            <p>嚴選 Tabelog 高評價且預算親民的餐廳與咖啡廳，點擊地圖按鈕可直接導航。</p>
+
+            <div class="area-section">
+                <h3>📍 京都車站周邊</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <div class="food-title">京の焼肉処 弘 (京都塔店) <span class="rating">🌟 3.55</span></div>
+                        <p>超高CP值和牛燒肉，肉質鮮嫩，特上牛五花與壺漬牛排必點。</p>
+                        <div class="price">💰 預估：￥4,000</div>
+                        <a href="https://maps.google.com/?q=京の焼肉処弘+京都タワーサンド店" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">京都勝牛 (京都站前店) <span class="rating">🌟 3.48</span></div>
+                        <p>外酥內嫩的炸牛排發源地，60秒高溫快炸保持鮮嫩。</p>
+                        <div class="price">💰 預估：￥2,000</div>
+                        <a href="https://maps.google.com/?q=京都勝牛+京都駅前" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">名代豬排 Katsukura <span class="rating">🌟 3.52</span></div>
+                        <p>位於The Cube 11樓。主打低溫熟成三元豬，自己研磨芝麻搭配秘製醬汁。</p>
+                        <div class="price">💰 預估：￥2,500</div>
+                        <a href="https://maps.google.com/?q=名代豬排+京都車站" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-section">
+                <h3>📍 京都河原町 / 祇園周邊</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <div class="food-title">Maccha House 抹茶館 <span class="rating">🌟 3.51</span></div>
+                        <p>爆紅的宇治抹茶提拉米蘇，裝在傳統木盒裡，口感滑順濃郁。</p>
+                        <div class="price">💰 預估：￥1,500</div>
+                        <a href="https://maps.google.com/?q=Maccha+House+抹茶館+河原町" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">Inoda Coffee (本店) <span class="rating">🌟 3.73</span></div>
+                        <p>1940年創立的京都老字號咖啡館，招牌「阿拉伯真珠」咖啡與炸牛排三明治。</p>
+                        <div class="price">💰 預估：￥2,000</div>
+                        <a href="https://maps.google.com/?q=Inoda+Coffee+本店" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-section">
+                <h3>📍 大阪難波周邊</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <div class="food-title">福太郎 (本店) <span class="rating">🌟 3.76</span></div>
+                        <p>難波排隊名店。滿滿青蔥與優質醬油製作的「蔥燒」大阪燒是必點招牌。</p>
+                        <div class="price">💰 預估：￥2,000</div>
+                        <a href="https://maps.google.com/?q=福太郎+難波" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">自由軒 (難波本店) <span class="rating">🌟 3.58</span></div>
+                        <p>百年歷史的生雞蛋咖哩飯！濃郁微辣咖哩搭配生蛋攪拌，昭和懷舊風味。</p>
+                        <div class="price">💰 預估：￥1,200</div>
+                        <a href="https://maps.google.com/?q=自由軒+難波" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="area-section">
+                <h3>📍 大阪心齋橋周邊</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <div class="food-title">北極星 (心齋橋本店) <span class="rating">🌟 3.62</span></div>
+                        <p>日本蛋包飯的創始店。在傳統日式榻榻米包廂內享用金黃薄嫩的經典蛋包飯。</p>
+                        <div class="price">💰 預估：￥1,500</div>
+                        <a href="https://maps.google.com/?q=北極星+蛋包飯+本店" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">Luke's Lobster <span class="rating">🌟 3.50</span></div>
+                        <p>紐約爆紅的龍蝦堡！酥脆奶油麵包夾滿鮮甜冷龍蝦肉，逛街解饞最佳選擇。</p>
+                        <div class="price">💰 預估：￥2,500</div>
+                        <a href="https://maps.google.com/?q=Lukes+Lobster+心齋橋" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="area-section">
+                <h3>📍 大阪梅田周邊</h3>
+                <div class="food-grid">
+                    <div class="food-card">
+                        <div class="food-title">きじ (木地大阪燒) <span class="rating">🌟 3.75</span></div>
+                        <p>藍天大廈B1滝見小路內。老闆親切友善，摩登燒口感豐富香氣四溢。</p>
+                        <div class="price">💰 預估：￥1,500</div>
+                        <a href="https://maps.google.com/?q=きじ+梅田スカイビル" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">人類都是麵類 Premium <span class="rating">🌟 3.68</span></div>
+                        <p>關西最強拉麵LUCUA分店。醬油湯頭清甜，搭配超厚切入口即化的叉燒。</p>
+                        <div class="price">💰 預估：￥1,300</div>
+                        <a href="https://maps.google.com/?q=人類みな麺類+梅田" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                    <div class="food-card">
+                        <div class="food-title">HARBS (LUCUA店) <span class="rating">🌟 3.55</span></div>
+                        <p>必吃超大份量水果千層蛋糕！滿滿當季新鮮水果與清爽鮮奶油。</p>
+                        <div class="price">💰 預估：￥1,800</div>
+                        <a href="https://maps.google.com/?q=HARBS+LUCUA" target="_blank" class="map-btn">🗺️ 在地圖上開啟</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 梅田指南區塊 -->
+        <section id="umeda">
+            <h2>🏙️ 梅田百貨逛街與步行全攻略</h2>
+            <div class="guide-box">
+                <h3>🚶‍♂️ 拒絕迷路！步行不敗指南</h3>
+                <p>梅田地下街錯綜複雜，為了保持體力與優雅，<strong>強烈建議：「拒絕下地，走 2 樓空中天橋！」</strong></p>
+                <ol>
+                    <li><strong>抵達JR大阪站：</strong>從「中央口」出來後，直接搭手扶梯上 2 樓。</li>
+                    <li><strong>利用空中天橋：</strong>2樓的聯絡橋寬敞明亮，連通了 LUCUA、Grand Front、阪急等主要百貨。全程免擠地下街，且手機導航定位不會飄移。</li>
+                </ol>
+            </div>
+
+            <h3>🛍️ 四大必逛商場特色盤點</h3>
+            <ul class="mall-list">
+                <li>
+                    <strong>LUCUA & LUCUA 1100 (與JR大阪站共構)</strong><br>
+                    適合對象：20-40歲女性、喜歡日系潮流。<br>
+                    亮點：聚集極多日系服飾品牌、生活雜貨，B2美食街選擇豐富。
+                </li>
+                <li>
+                    <strong>Grand Front Osaka (JR大阪站北側)</strong><br>
+                    適合對象：喜歡都會生活風格、質感家居的人。<br>
+                    亮點：擁有西日本最大的 MUJI 無印良品旗艦店，空間極度寬敞，逛起來毫無壓迫感。
+                </li>
+                <li>
+                    <strong>阪急百貨梅田本店 (JR大阪站東側)</strong><br>
+                    適合對象：鎖定國際精品、專櫃彩妝、高級伴手禮的旅客。<br>
+                    亮點：關西百貨霸主。B1/B2美食街被譽為「伴手禮界的LV」，人氣的 Bâton d'or 等洋菓子都在這。
+                </li>
+                <li>
+                    <strong>大丸百貨梅田店 (JR大阪站南口直結)</strong><br>
+                    適合對象：動漫迷、親子家庭。<br>
+                    亮點：13樓有超大型的 Pokémon Center 與 Nintendo OSAKA 官方直營店，B1有必吃的老爺爺起司蛋糕。
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        &copy; 2026 京都大阪 秋季旅遊全攻略 🍁 Have a good trip!
+    </footer>
+
+</body>
+</html>
