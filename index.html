@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大阪三日遊與美食指南</title>
+    <style>
+        :root {
+            --primary-color: #e53935;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, '微軟正黑體', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            position: sticky;
+            top: 56px;
+            z-index: 99;
+        }
+        .tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 10px;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .tab-btn:hover {
+            background-color: #f9f9f9;
+        }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        .content {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        .price {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .map-link {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #1976d2;
+            text-decoration: none;
+            border: 1px solid #1976d2;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .map-link:hover {
+            background-color: #e3f2fd;
+        }
+        .itinerary-time {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .tag {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>大阪 3日遊與美食導覽</h1>
+</header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="openTab(event, 'itinerary')">行程規劃</button>
+    <button class="tab-btn" onclick="openTab(event, 'namba')">難波美食</button>
+    <button class="tab-btn" onclick="openTab(event, 'shinsaibashi')">心齋橋美食</button>
+    <button class="tab-btn" onclick="openTab(event, 'umeda')">梅田美食</button>
+</div>
+
+<div class="content">
+    <!-- 行程規劃 -->
+    <div id="itinerary" class="tab-content active">
+        <h2>Day 1：難波 / 心齋橋</h2>
+        <div class="card">
+            <span class="itinerary-time">09:00 - 12:00</span>
+            <p>抵達關西機場，搭乘南海電鐵特急直達「難波站」，飯店寄放行李。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">12:30 - 14:00</span>
+            <p><strong>黑門市場</strong>午餐。品嚐海鮮、和牛串燒與新鮮水果。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">14:30 - 17:30</span>
+            <p>參觀<strong>難波八阪神社</strong>(巨型獅子殿)，接著逛<strong>心齋橋筋商店街</strong>。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">18:00 - 21:00</span>
+            <p><strong>道頓堀</strong>與固力果跑跑人合影。享用大阪燒或章魚燒晚餐。</p>
+        </div>
+
+        <h2>Day 2：大阪城 / 梅田</h2>
+        <div class="card">
+            <span class="itinerary-time">09:00 - 12:30</span>
+            <p>搭地鐵至<strong>大阪城公園</strong>，參觀天守閣與護城河。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">13:00 - 14:30</span>
+            <p>搭地鐵至<strong>梅田站</strong>，於阪急三番街等地下街享用高分洋食/拉麵。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">14:30 - 17:30</span>
+            <p>梅田商圈逛街，挑選高分甜點店享用下午茶。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">18:00 - 21:00</span>
+            <p>前往<strong>梅田藍天大廈(空中庭園)</strong>賞夜景，梅田周邊居酒屋晚餐。</p>
+        </div>
+
+        <h2>Day 3：新世界 / 賦歸</h2>
+        <div class="card">
+            <span class="itinerary-time">09:30 - 12:00</span>
+            <p>退房寄放行李，前往<strong>新世界與通天閣</strong>，感受復古大阪風情。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">12:00 - 13:30</span>
+            <p>體驗發源地道地的<strong>串炸</strong>午餐（記得禁止二次沾醬）。</p>
+        </div>
+        <div class="card">
+            <span class="itinerary-time">14:00 - 16:00</span>
+            <p>返回取行李，前往關西機場。時間充裕可至<strong>臨空城 Outlet</strong> 採購，搭機返家。</p>
+        </div>
+    </div>
+
+    <!-- 難波美食 -->
+    <div id="namba" class="tab-content">
+        <h2>難波周邊 Tabelog 3.5+</h2>
+        <div id="namba-list"></div>
+    </div>
+
+    <!-- 心齋橋美食 -->
+    <div id="shinsaibashi" class="tab-content">
+        <h2>心齋橋周邊 Tabelog 3.5+</h2>
+        <div id="shinsaibashi-list"></div>
+    </div>
+
+    <!-- 梅田美食 -->
+    <div id="umeda" class="tab-content">
+        <h2>梅田周邊 Tabelog 3.5+</h2>
+        <div id="umeda-list"></div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    const restaurants = {
+        namba: [
+            {name: "福太郎 本店", tag: "人氣餐廳", desc: "滿滿青蔥的大阪燒/蔥燒排隊名店", price: "約¥2,000"},
+            {name: "味乃家", tag: "人氣餐廳", desc: "米其林指南推薦過的老字號大阪燒", price: "約¥2,000"},
+            {name: "わなか 千日前 本店", tag: "人氣餐廳", desc: "外皮微脆、內餡軟糊的王道章魚燒", price: "約¥1,000"},
+            {name: "麺屋 丈六", tag: "人氣餐廳", desc: "隱身巷弄的高人氣「高井田系」黑醬油拉麵", price: "約¥1,000"},
+            {name: "自由軒 難波本店", tag: "人氣餐廳", desc: "百年歷史，生雞蛋拌入熱騰騰名物咖哩飯", price: "約¥1,000"},
+            {name: "普通の食堂 いわま", tag: "人氣餐廳", desc: "份量大充滿人情味的高CP值定食", price: "約¥1,500"},
+            {name: "豚まん 551蓬莱 戎橋本店", tag: "人氣餐廳", desc: "大阪靈魂美食現包鮮甜豬肉包", price: "約¥1,000"},
+            {name: "カドヤ食堂 難波店", tag: "人氣餐廳", desc: "清爽卻底蘊深厚的醬油中華拉麵", price: "約¥1,000"},
+            {name: "難波 炭火焼き鳥 えんや", tag: "人氣餐廳", desc: "氣氛熱絡備長炭烤製高品質平價烤鳥", price: "約¥3,500"},
+            {name: "クレープリー・アルション", tag: "甜點/咖啡", desc: "黃色洋房道地法式可麗餅專賣", price: "約¥1,500"},
+            {name: "りくろーおじさんの店 難波本店", tag: "甜點/咖啡", desc: "剛出爐會搖晃的輕乳酪蛋糕", price: "約¥1,000"},
+            {name: "純喫茶 アメリカン", tag: "甜點/咖啡", desc: "昭和風情復古咖啡廳，推薦熱鬆餅", price: "約¥1,500"},
+            {name: "丸福珈琲店 千日前本店", tag: "甜點/咖啡", desc: "80年歷史濃厚深焙咖啡配烤布丁", price: "約¥1,000"},
+            {name: "アラビヤコーヒー", tag: "甜點/咖啡", desc: "木造吧檯自家烘焙咖啡，歇腳好去處", price: "約¥1,000"}
+        ],
+        shinsaibashi: [
+            {name: "明治軒", tag: "人氣餐廳", desc: "昭和元年老字號洋食，銀串炸與蛋包飯", price: "約¥1,500"},
+            {name: "北極星 心斎橋本店", tag: "人氣餐廳", desc: "日式蛋包飯創始店，傳統日式建築", price: "約¥1,500"},
+            {name: "鶏Soba 座銀 にぼし店", tag: "人氣餐廳", desc: "法式濃湯般濃郁的雞白湯拉麵", price: "約¥1,500"},
+            {name: "うさみ亭マツバヤ", tag: "人氣餐廳", desc: "「狐狸烏龍麵」(豆皮烏龍麵)發源老店", price: "約¥1,000"},
+            {name: "魚心 南店", tag: "人氣餐廳", desc: "份量為一般三倍大的豪邁平價壽司", price: "約¥1,500"},
+            {name: "神座 心斎橋店", tag: "人氣餐廳", desc: "大量大白菜熬煮，湯頭獨特鮮甜拉麵", price: "約¥1,000"},
+            {name: "焼肉 きたん", tag: "人氣餐廳", desc: "高CP值肉質極佳熟成和牛燒肉定食(午)", price: "約¥2,500"},
+            {name: "だるま 心斎橋店", tag: "人氣餐廳", desc: "必吃元祖串炸，嚴禁二次沾醬", price: "約¥3,000"},
+            {name: "アリーズ キッチン", tag: "人氣餐廳", desc: "米其林推薦道地巴基斯坦香料咖哩", price: "約¥2,000"},
+            {name: "サロン・ド・モンシェール 本店", tag: "甜點/咖啡", desc: "堂島生乳捲本店，鮮奶油清爽", price: "約¥2,000"},
+            {name: "宇治園 喫茶去 心斎橋本店", tag: "甜點/咖啡", desc: "老字號茶舖甘味處，抹茶聖代極受歡迎", price: "約¥1,500"},
+            {name: "エルク (elk)", tag: "甜點/咖啡", desc: "立體拉花與超厚入口即化舒芙蕾鬆餅", price: "約¥1,500"},
+            {name: "ストリーマーコーヒーカンパニー", tag: "甜點/咖啡", desc: "世界拿鐵冠軍極簡風咖啡", price: "約¥1,000"}
+        ],
+        umeda: [
+            {name: "はなだこ", tag: "人氣餐廳", desc: "新梅田食道街，永遠在排隊蔥爆多章魚燒", price: "約¥1,000"},
+            {name: "きじ 梅田スカイビル店", tag: "人氣餐廳", desc: "藍天大廈地下，大叔人情味絕品大阪燒", price: "約¥1,500"},
+            {name: "麺屋 たけ井 阪急梅田店", tag: "人氣餐廳", desc: "車站內魚介湯頭濃厚超人氣沾麵", price: "約¥1,000"},
+            {name: "麦と麺助", tag: "人氣餐廳", desc: "頂級地雞與醬油熬煮出的究極拉麵", price: "約¥1,500"},
+            {name: "旧ヤム鐵道", tag: "人氣餐廳", desc: "鐵道復古風情特色香料咖哩", price: "約¥1,500"},
+            {name: "インデアンカレー 阪急三番街店", tag: "人氣餐廳", desc: "入口偏甜隨後銷魂辣勁的特色咖哩", price: "約¥1,000"},
+            {name: "グリル ロン 阪急三番街店", tag: "人氣餐廳", desc: "排隊洋食館，漢堡排與炸蝦定食", price: "約¥1,500"},
+            {name: "大阪トンテキ 大阪駅前第2ビル店", tag: "人氣餐廳", desc: "大蒜醬汁爆量軟嫩厚切豬排飯", price: "約¥1,000"},
+            {name: "ぶどう亭", tag: "人氣餐廳", desc: "濃郁多汁漢堡排，白飯與湯可續加", price: "約¥1,500"},
+            {name: "踊るうどん 梅田店", tag: "人氣餐廳", desc: "麵條具彈性必點酥脆舞菇天婦羅烏龍", price: "約¥1,000"},
+            {name: "ル・シュクレクール", tag: "甜點/咖啡", desc: "大阪排名No.1法式麵包店", price: "約¥1,500"},
+            {name: "エシレ・マルシェ オ ブール", tag: "甜點/咖啡", desc: "艾許奶油專賣，奶油煎餅超難搶", price: "約¥2,000"},
+            {name: "ホワイトバード コーヒー スタンド", tag: "甜點/咖啡", desc: "手沖咖啡與顏值極高季節限定甜點杯", price: "約¥1,000"}
+        ]
+    };
+
+    function renderList(areaId, data) {
+        const container = document.getElementById(areaId + '-list');
+        data.forEach(item => {
+            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + ' 大阪')}`;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>${item.name} <span class="tag">${item.tag}</span></h3>
+                <p>${item.desc}</p>
+                <p class="price">預算: ${item.price}</p>
+                <a href="${mapUrl}" target="_blank" class="map-link">📍 在 Google Maps 查看</a>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // 初始化渲染
+    renderList('namba', restaurants.namba);
+    renderList('shinsaibashi', restaurants.shinsaibashi);
+    renderList('umeda', restaurants.umeda);
+</script>
+
+</body>
+</html>
